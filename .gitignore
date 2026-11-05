@@ -1,0 +1,22 @@
+# ---- Dependencias ----
+node_modules/
+
+# ---- Build / salida ----
+dist/
+.angular/
+tmp/
+out-tsc/
+
+# ---- Entornos y secretos ----
+.env
+*.env
+src/environments/environment.local.ts
+
+# ---- Editores ----
+.vs/
+.idea/
+*.swp
+
+# ---- Logs ----
+*.log
+npm-debug.log*

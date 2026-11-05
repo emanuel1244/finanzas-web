@@ -1,0 +1,53 @@
+@if (auth.user(); as user) {
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo" aria-hidden="true"><app-icon name="wallet" [size]="22" /></span>
+        <span class="brand-name">Mis Finanzas<small>Control personal</small></span>
+      </div>
+
+      <nav aria-label="Principal">
+        @for (l of links(); track l.path) {
+          <a [routerLink]="l.path" routerLinkActive="active">
+            <app-icon [name]="l.icon" [size]="19" />
+            <span>{{ l.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="account">
+        <div class="who">
+          <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+          <span class="who-text">
+            <strong>{{ user.name }}</strong>
+            <small>{{ roleLabel() }}</small>
+          </span>
+        </div>
+        <div class="account-actions">
+          <button type="button" class="side-btn" (click)="changingPassword.set(true)" aria-label="Cambiar contraseña">
+            <app-icon name="key" [size]="18" /><span>Contraseña</span>
+          </button>
+          <button type="button" class="side-btn" (click)="toggleTheme()"
+                  [attr.aria-label]="theme() === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'">
+            <app-icon [name]="theme() === 'dark' ? 'sun' : 'moon'" [size]="18" /><span>{{ theme() === 'dark' ? 'Tema claro' : 'Tema oscuro' }}</span>
+          </button>
+          <button type="button" class="side-btn out" (click)="logout()" aria-label="Cerrar sesión">
+            <app-icon name="logout" [size]="18" /><span>Cerrar sesión</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="container">
+        <router-outlet />
+      </div>
+    </main>
+  </div>
+
+  @if (changingPassword()) {
+    <app-change-password (closed)="changingPassword.set(false)" />
+  }
+} @else {
+  <router-outlet />
+}
