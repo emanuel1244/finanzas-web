@@ -55,7 +55,15 @@ export interface DebtRequest {
 }
 /** La API solo permite editar datos descriptivos; los términos financieros son inmutables tras crear. */
 export interface DebtUpdateRequest { name: string; creditor: string | null; }
-export interface DebtPayment { id: number; date: string; amount: number; interest: number; capital: number; balanceAfter: number; }
+export interface DebtPayment {
+  id: number; date: string; amount: number; interest: number; capital: number; balanceAfter: number;
+  /** Cuota esperada del periodo al momento del pago. */
+  installmentDue: number;
+  /** Faltante respecto a la cuota esperada (saldo a favor del mes). 0 si se pagó completa o de más. */
+  shortfall: number;
+  /** Indica si el abono fue menor que la cuota esperada. */
+  isPartial: boolean;
+}
 export interface ScheduleRow { number: number; dueDate: string; installment: number; interest: number; capital: number; balance: number; }
 
 export interface SavingsPlan {

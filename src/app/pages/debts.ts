@@ -140,14 +140,26 @@ import { CopPipe, MoneyInput } from '../core/money';
                 </tbody>
               </table>
             } @else {
+              @if (totalShortfall() > 0) {
+                <p class="muted small-text" style="margin:0 0 10px">
+                  <app-icon name="alert" [size]="14" />
+                  Saldo a favor acumulado por pagos parciales: <strong>$ {{ totalShortfall() | cop }}</strong>
+                  (registrado como ingreso del mes).
+                </p>
+              }
               <table>
-                <thead><tr><th>Fecha</th><th class="num">Pago</th><th class="num">Interés</th><th class="num">Capital</th><th class="num">Saldo</th></tr></thead>
+                <thead><tr><th>Fecha</th><th class="num">Pago</th><th class="num">Interés</th><th class="num">Capital</th><th class="num">Saldo a favor</th><th class="num">Saldo</th></tr></thead>
                 <tbody>
                   @for (p of payments(); track p.id) {
                     <tr><td class="muted">{{ p.date }}</td><td class="num">{{ p.amount | cop }}</td>
                       <td class="num">{{ p.interest | cop }}</td><td class="num">{{ p.capital | cop }}</td>
+                      <td class="num">
+                        @if (p.isPartial) {
+                          <span class="badge warn" [title]="'Cuota esperada: $' + (p.installmentDue | cop)">+$ {{ p.shortfall | cop }}</span>
+                        } @else { <span class="muted">—</span> }
+                      </td>
                       <td class="num">{{ p.balanceAfter | cop }}</td></tr>
-                  } @empty { <tr><td colspan="5" class="empty">Aún no hay pagos.</td></tr> }
+                  } @empty { <tr><td colspan="6" class="empty">Aún no hay pagos.</td></tr> }
                 </tbody>
               </table>
             }
@@ -203,6 +215,8 @@ export class DebtsPage {
   totalBalance = computed(() => this.debts().filter(d => d.status === 'Active').reduce((s, d) => s + d.balance, 0));
   totalMonthly = computed(() => this.debts().filter(d => d.status === 'Active').reduce((s, d) => s + d.monthlyCommitment, 0));
   activeCount = computed(() => this.debts().filter(d => d.status === 'Active').length);
+  /** Suma de los faltantes (saldo a favor) de los pagos cargados de la deuda seleccionada. */
+  totalShortfall = computed(() => this.payments().reduce((s, p) => s + (p.shortfall ?? 0), 0));
 
   payAmounts: Record<number, number | null> = {};
   payDate = today();
